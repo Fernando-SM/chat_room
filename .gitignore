@@ -1,0 +1,53 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dist and build outputs
+dist/
+build/
+
+# Environment variables
+.env
+**/.env
+
+# Temporary files
+*.swp
+*.swo
+*.bak
+*.tmp
+*.log
+*.DS_Store
+Thumbs.db
+
+# IDE configurations
+.idea/
+.vscode/
+
+# Dependency lockfiles (if not needed)
+package-lock.json
+yarn.lock
+
+# Compiled output
+*.log
+*.out
+*.class
+
+# Cache files
+.cache/
+public/uploads/
+
+# Exclude the backend/uploads but keep public/uploads
+backend/uploads/
+
+# Exclude local config files
+*.local
+*.env.local
+
+# Exclude babel and ESLint config files (if not required)
+babel.config.js
+.eslintrc.js

@@ -1,0 +1,12 @@
+@mixin button-style($bg-color, $hover-color) {
+  background-color: $bg-color;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+}

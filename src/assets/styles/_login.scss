@@ -1,0 +1,21 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to bottom right, $secondary-color, $primary-color);
+  color: white;
+
+  .login-card {
+    background: $card-background;
+    border-radius: 8px;
+    padding: 30px 40px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    color: #333;
+  }
+
+  .btn-primary {
+    @include button-style($secondary-color, $secondary-hover);
+  }
+}
