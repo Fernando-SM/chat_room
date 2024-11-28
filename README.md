@@ -2,6 +2,12 @@
 
 Este es un proyecto de una aplicación de chat en tiempo real construida con **Vue.js**, **Vuex** en el front-end y **Node.js** en el back-end. La aplicación permite a los usuarios unirse a una sala de chat utilizando un nombre de usuario, enviar y recibir mensajes de texto, así como archivos e imágenes. Se utiliza **Socket.IO** para la comunicación en tiempo real y **MongoDB** para almacenar el historial de mensajes.
 
+## Usuario de Prueba
+- admin
+- 123456789
+
+
+- (LA BASE DE DATOS ESTA EN LA CARPETA BACKEND EN LA SECCION DE DB)
 ## Características del Proyecto
 - **Chat en Tiempo Real**: Uso de Socket.IO para enviar y recibir mensajes en tiempo real entre usuarios conectados.
 - **Chat Room Multiusuario**: Cada usuario debe proporcionar un nombre de usuario para unirse y participar en la sala de chat.

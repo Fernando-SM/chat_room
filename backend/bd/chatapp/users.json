@@ -1,0 +1,10 @@
+[
+  {
+    "__v": 0,
+    "_id": "{\"$oid\":\"6748cb385bbd8b1478d9abc4\"}",
+    "createdAt": "{\"$date\":\"2024-11-28T19:57:44.290Z\"}",
+    "password": "$2a$10$HgclsbgNdv/fDe3MJm/niOg/3PB0WXBtV0/AnGxgUKN5ikuUUjNna",
+    "updatedAt": "{\"$date\":\"2024-11-28T19:57:44.290Z\"}",
+    "username": "admin"
+  }
+]
