@@ -8,32 +8,35 @@ const { Server } = require("socket.io");
 const Message = require("./models/Message");
 const routes = require("./routes/routes");
 
-dotenv.config();
-connectDatabase();
+dotenv.config(); // Carga las variables de entorno desde el archivo .env
+connectDatabase(); // Conexión a MongoDB
 
 const app = express();
 
 // Configuración de archivos estáticos
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-    setHeaders: (res, filePath) => {
-        const ext = path.extname(filePath).toLowerCase();
-        if (ext === '.pdf') {
-            res.set({
-                'Content-Type': 'application/pdf',
-                'Content-Disposition': 'inline'
-            });
-        } else if (['.jpg', '.jpeg', '.png', '.gif'].includes(ext)) {
-            res.set('Content-Type', `image/${ext.substring(1)}`);
-        } else if (['.mp4', '.webm'].includes(ext)) {
-            res.set('Content-Type', `video/${ext.substring(1)}`);
-        }
-    }
-}));
+app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "uploads"), {
+        setHeaders: (res, filePath) => {
+            const ext = path.extname(filePath).toLowerCase();
+            if (ext === ".pdf") {
+                res.set({
+                    "Content-Type": "application/pdf",
+                    "Content-Disposition": "inline",
+                });
+            } else if ([".jpg", ".jpeg", ".png", ".gif"].includes(ext)) {
+                res.set("Content-Type", `image/${ext.substring(1)}`);
+            } else if ([".mp4", ".webm"].includes(ext)) {
+                res.set("Content-Type", `video/${ext.substring(1)}`);
+            }
+        },
+    })
+);
 
 // Middleware
 app.use(
     cors({
-        origin: "*",
+        origin: process.env.FRONTEND_URL || "*", // Permitir origen desde FRONTEND_URL o todos los orígenes
         methods: ["GET", "POST", "PUT", "DELETE"],
         allowedHeaders: ["Authorization", "Content-Type"],
         credentials: true,
@@ -65,23 +68,24 @@ const server = http.createServer(app);
 // Configuración de Socket.IO
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: process.env.FRONTEND_URL || "*", // Permitir conexión desde FRONTEND_URL o todos los orígenes
         methods: ["GET", "POST"],
     },
 });
 
+// Middleware para Socket.IO
 app.use((req, res, next) => {
-    req.io = io; // Añadir la instancia de Socket.IO a `req`
+    req.io = io; // Agregar la instancia de Socket.IO a `req`
     next();
 });
 
-
+// Gestión de usuarios escribiendo
 const typingUsers = {};
 
 io.on("connection", (socket) => {
     console.log(`Usuario conectado: ${socket.id}`);
 
-    // Escuchar cuando un usuario envía un mensaje
+    // Escuchar mensajes
     socket.on("message", async (data) => {
         console.log("Mensaje recibido:", data);
         try {
@@ -93,9 +97,14 @@ io.on("connection", (socket) => {
                 mediaType: data.mediaType,
             });
             await newMessage.save();
-            io.emit("message", newMessage); // Emitir el mensaje a todos los usuarios
+            io.emit("message", {
+                ...newMessage._doc,
+                media: newMessage.media
+                    ? `${process.env.BASE_URL}${newMessage.media}`
+                    : null,
+            });
 
-            // Detener la escritura si el usuario está escribiendo
+            // Detener escritura si el usuario está escribiendo
             if (typingUsers[socket.id]) {
                 delete typingUsers[socket.id];
                 socket.broadcast.emit("stopTyping", data.author);
@@ -105,24 +114,24 @@ io.on("connection", (socket) => {
         }
     });
 
-    // Escuchar cuando un usuario comienza a escribir
+    // Usuario escribiendo
     socket.on("typing", (username) => {
         if (username) {
             typingUsers[socket.id] = username;
-            socket.broadcast.emit("typing", username); // Notificar a otros usuarios
+            socket.broadcast.emit("typing", username);
         }
     });
 
-    // Escuchar cuando un usuario deja de escribir
+    // Usuario deja de escribir
     socket.on("stopTyping", () => {
         const username = typingUsers[socket.id];
         if (username) {
             delete typingUsers[socket.id];
-            socket.broadcast.emit("stopTyping", username); // Notificar a otros usuarios
+            socket.broadcast.emit("stopTyping", username);
         }
     });
 
-    // Manejar la desconexión del usuario
+    // Usuario desconectado
     socket.on("disconnect", () => {
         const username = typingUsers[socket.id];
         if (username) {
@@ -133,6 +142,7 @@ io.on("connection", (socket) => {
     });
 });
 
+// Iniciar servidor
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
